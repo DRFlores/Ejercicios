@@ -1,0 +1,180 @@
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#define TAM 25
+#define ESC 27
+
+typedef struct
+{
+    char nombre[TAM];
+    int edad;
+} tipoDato;
+
+typedef struct
+{
+    tipoDato dato;
+    struct tipoNodo *sig;
+} tipoNodo;
+typedef tipoNodo *pNodo;
+
+
+void crearPila (pNodo *);
+int esPilaLlena();
+int esPilaVacia(pNodo *);
+int apilar(pNodo *,tipoDato *);
+int desapilar(pNodo *, tipoDato*);
+int  verTope(pNodo *, tipoDato*);
+void  vaciarPila(pNodo *);
+
+int main()
+{
+    pNodo pila;
+    tipoDato dato;
+    char op;
+    crearPila(&pila);
+    do
+    {
+        printf("\nºººººººººººººººººººººººººººººººººº\n"
+               "º                                º\n"
+               "º  1)Pila LLena?                 º\n"
+               "º  2)Pila Vacia?                 º\n"
+               "º  3)Apilar                      º\n"
+               "º  4)Desapilar                   º\n"
+               "º  5)Ver Tope                    º\n"
+               "º  6)Vaciar la Pila              º\n"
+               "º                                º\n"
+               "º   ESC para salir               º\n"
+               "ºººººººººººººººººººººººººººººººººº\n\n"
+
+              );
+
+        op=getch();
+        switch (op)
+        {
+        case '1':
+            if(esPilaLlena())
+                puts("Pila llena. No hay mas memoria disponible");
+            else
+                puts("La pila no esta llena.\nPuede seguir agregando nodos a la pila");
+            break;
+
+        case '2':
+            if(esPilaVacia(&pila))
+                puts("Pila vacia");
+            else puts("Pila cargada");
+            break;
+
+        case '3':
+            puts("Ingrese Nombre: ");
+            fflush(stdin);
+            gets(dato.nombre);
+            puts("\nIngrese edad: ");
+            scanf("%d",&dato.edad);
+            if(!apilar(&pila,&dato))
+                puts("\a\n\nMemoria llena! El elemento no pudo ser almacenado");
+            else
+            puts("\nLa informacion fue almacenada exitosamente!");
+            break;
+
+        case '4':
+            if(desapilar(&pila,&dato))
+            {
+                puts("El ultimo nodo se desapilo correctamente...\nNodo desapilado:");
+                printf("\nNombre: %s",dato.nombre);
+                printf("\nEdad: %d", dato.edad);
+            }
+            else
+            puts("La pila esta vacia. No hay nodos que desapilar");
+            break;
+
+        case '5':
+            if(verTope(&pila,&dato))
+            {
+                printf("Nombre: %s",dato.nombre);
+                printf("\nEdad: %d", dato.edad);
+            }
+            else printf("No hay nada en el tope");
+            break;
+
+        case '6':
+            vaciarPila(&pila);
+            puts("La pila fue vaciada exitosamente!");
+            break;
+        case ESC:
+            puts("Saliendo del programa...\nPresione una tecla para finalizar");
+            break;
+        default:
+            puts("La opcion ingresada es incorrecta");
+        }
+
+        puts("\n\n");
+        system("pause");
+        system("cls");
+
+    }
+    while(op!=ESC);
+    return 0;
+}
+
+void crearPila(pNodo *p)
+{
+    *p=NULL;
+}
+
+int esPilaVacia(pNodo *p)
+{
+    return *p==NULL;
+}
+
+int esPilaLlena()
+{
+    pNodo aux;
+    aux=(pNodo)malloc(sizeof(tipoNodo));
+    if (!aux)
+        return 1;
+    free(aux);
+    return 0;
+}
+
+int verTope(pNodo *p,tipoDato *d)
+{
+    if(!*p)
+        return 0; //pila vacia
+    *d=(*p)->dato;
+    return 1;
+}
+
+int apilar(pNodo *p,tipoDato *d)
+{
+    pNodo nuevo;
+    nuevo=(pNodo)malloc(sizeof(tipoNodo));
+    if (!nuevo)
+        return 0; //no hay memoria
+    nuevo->dato= *d;
+    nuevo->sig= *p;
+    *p=nuevo;
+    return 1;
+}
+
+int desapilar(pNodo *p, tipoDato *d)
+{
+    pNodo nodo;
+    if (!*p)
+        return 0; //pila vacia
+    nodo=*p;
+    *p=nodo->sig;
+    *d=nodo->dato;
+    free(nodo);
+    return 1;
+}
+
+void vaciarPila(pNodo *p)
+{
+    pNodo nodo;
+    while(*p)
+    {
+        nodo=*p;
+        *p=nodo->sig;
+        free(nodo);
+    }
+}
